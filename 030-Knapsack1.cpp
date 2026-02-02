@@ -10,63 +10,35 @@ int N, W;
 int main ()
 {
     cin >> N >> W;
-    vector<int> w(N), v(N); // weight, value
-    for(int i=0; i<N; i++) cin >> w[i] >> v[i];
-       
-    vector<vector<int>> dp(N, vector<int>(W, 0));
+    vector<int> w(N+1, 0), v(N+1, 0); // weight, value
+    // dpテーブルは、品物を選ばない i = 0 も必要。ナップザックは0オリジンじゃない
+    for(int i=1; i<N+1; i++) cin >> w[i] >> v[i];
+    vector<vector<int>> dp(N+1, vector<int>(W+1, 0));
 
-    // ０行目 品物が１つだから選択できるなら、選択した方がいい
-    for(int j=0; j<W; j++) {
-        if(w[0] <= j) dp[0][j] = v[0];
-    }
-    // １行目　品物が 0, 1 で、
-    for(int j=0; j<W; j++) {
-        // 品物 1 が選べないときは、品物 0 までのdpから変化なし
-        if(w[0] > j) dp[1][j] = dp[0][j];
-        // 品物 1 が選べるときは、
-        else {
-            // pattern 1: 品物1 しか所持できない
-            if(W - w[1] < w[0]) {
-                if(dp[0][j] < v[1]) {
-                    dp[1][j] = v[1];
-                }
-                else {
-                    dp[1][j] = dp[0][j];
-                }
-            }
-            // pattern 2: 品物0, 1 を両方所持できる
-            else {
-                dp[1][j] = dp[0][j] + v[1];
+    // 0 行目の初期化
+    dp[0][0] = 0;
+    for(int j=1; j<W+1; j++) dp[0][j] = -(1 << 10);
+
+    for(int i = 1; i < N+1; i++) {
+        for(int j = 0; j < W+1; j++) {
+        
+            // 重さ j に満たないなら、選べないから前の行と同じ
+                    // ※ ここの条件文の向き、間違えて40分消えたから注意
+            if(j < w[i]) dp[i][j] = dp[i-1][j];
+            // 重さが j 以上なら、商品 i を選ぶか選ばないかを判定する
+            if(j >= w[i]) {
+                // 漸化式 （前の行の重さjの価値）　と　（前の行の重さj-w[i]の時の価値+v[i] の比較）
+                        // つまり、商品 i を追加したときに「なかった時（前の行）より価値が増えるなら追加する」
+                dp[i][j] = max(dp[i-1][j], dp[i-1][j-w[i]] + v[i]);
             }
         }
     }
-    // 2 行目　品物が 0,1,2で
-    for(int j=0; j<W; j++) {
-        // 品物 1 が選べないときは、品物 0 までのdpから変化なし
-        if(w[2] > j) dp[2][j] = dp[1][j];
-        // 品物 2 が選べるときは、
-        else {
-            if(dp[1][j] < v[2]) {
-                dp[2][j] += v[2];
-                j -= w[2];
 
-            }
-            // pattern 1: 品物2 しか所持できない
-            if(W - w[1] < w[0]) {
-                if(dp[0][j] < w[1]) {
-                    dp[1][j] = w[1];
-                }
-                else {
-                    dp[1][j] = dp[0][j];
-                }
-            }
-            // pattern 2: 品物0, 1 を両方所持できる
-            else {
-                dp[1][j] = dp[0][j] + w[1];
-            }
-        }
-    }
-    
+    // 答えの出力
+    int ans = 0;
+    for(int i=0; i<W+1; i++) ans = max(ans, dp[N][i]);
+    cout << ans;
     
     return 0;
+    
 }
