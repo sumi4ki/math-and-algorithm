@@ -1,3 +1,3 @@
 用途：『「アルゴリズム×数学」が基礎からしっかり身につく本』の問題を解いた結果などを記録</br>
 メリット：どのパソコンからでもプログラムにアクセスできる</br>
-アルゴリズム関連：leetcodeもこれから取り組む予定（https://leetcode.com/u/sumi4ki/）</br>
+アルゴリズム関連：leetcodeもこれから取り組む予定（ https://leetcode.com/u/sumi4ki/ ）</br>
